@@ -1,0 +1,30 @@
+body {
+    background: url("./background.jpg") no-repeat center center fixed;
+    background-size: cover;
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+    text-align: center;
+}
+
+#board {
+    width: 450px;
+    height: 450px;
+    background-color: rgba(173, 216, 230, 0.656);
+    border-radius: 10px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#board img {
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+#board img[data-name=blank] {
+    opacity: 0.6;
+}
+#board img:hover {
+    transform: scale(1.1);
+}
