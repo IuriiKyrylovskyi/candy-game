@@ -1,4 +1,7 @@
 const candies = ['Blue', 'Green', 'Orange', 'Purple', 'Red', 'Yellow']
+const BLANK = 'blank'
+const BLANK_IMG_PATH = './images/blank.png'
+
 const rows = 9
 const columns = 9
 let board = []
@@ -25,16 +28,16 @@ const cruchThree = () => {
       if (
         candy01Name === candy02Name &&
         candy02Name === candy03Name &&
-        candy01Name !== 'blank'
+        candy01Name !== BLANK
       ) {
-        candy01.setAttribute('data-name', 'blank')
-        candy01.setAttribute('src', './images/blank.png')
+        candy01.setAttribute('data-name', BLANK)
+        candy01.setAttribute('src', BLANK_IMG_PATH)
 
-        candy02.setAttribute('data-name', 'blank')
-        candy02.setAttribute('src', './images/blank.png')
+        candy02.setAttribute('data-name', BLANK)
+        candy02.setAttribute('src', BLANK_IMG_PATH)
 
-        candy03.setAttribute('data-name', 'blank')
-        candy03.setAttribute('src', './images/blank.png')
+        candy03.setAttribute('data-name', BLANK)
+        candy03.setAttribute('src', BLANK_IMG_PATH)
       }
     }
   }
@@ -52,16 +55,16 @@ const cruchThree = () => {
       if (
         candy01Name === candy02Name &&
         candy02Name === candy03Name &&
-        candy01Name !== 'blank'
+        candy01Name !== BLANK
       ) {
-        candy01.setAttribute('data-name', 'blank')
-        candy01.setAttribute('src', './images/blank.png')
+        candy01.setAttribute('data-name', BLANK)
+        candy01.setAttribute('src', BLANK_IMG_PATH)
 
-        candy02.setAttribute('data-name', 'blank')
-        candy02.setAttribute('src', './images/blank.png')
+        candy02.setAttribute('data-name', BLANK)
+        candy02.setAttribute('src', BLANK_IMG_PATH)
 
-        candy03.setAttribute('data-name', 'blank')
-        candy03.setAttribute('src', './images/blank.png')
+        candy03.setAttribute('data-name', BLANK)
+        candy03.setAttribute('src', BLANK_IMG_PATH)
       }
     }
   }
@@ -112,6 +115,9 @@ const onDragend = () => {
       const otherImg = otherCandy.src
       const curName = curCandy.getAttribute('data-name')
       const otherName = otherCandy.getAttribute('data-name')
+
+      // prevent swap with blank
+      if (curName === BLANK || otherName === BLANK) return
 
       curCandy.src = otherImg
       otherCandy.src = curImg
