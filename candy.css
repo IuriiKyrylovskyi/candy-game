@@ -25,7 +25,7 @@ main {
     transition: all 0.3s ease;
 }
 #board img[data-name=blank] {
-    opacity: 0.6;
+    opacity: 0;
 }
 #board img:hover {
     transform: scale(1.1);

@@ -9,6 +9,13 @@ let curCandy
 let otherCandy
 let score = 0
 
+let initX
+let initY
+let endX
+let endY
+let moveRight
+let moveDown
+
 const setRandom = arr => {
   return arr[Math.floor(Math.random() * arr.length)]
 }
@@ -340,7 +347,7 @@ const generateCandy = () => {
     }
   }
 }
-
+// drag events
 const onDragstart = e => {
   curCandy = e.target
 }
@@ -415,6 +422,71 @@ const onDragend = () => {
   return () => clearTimeout(timeout)
 }
 
+// touch events
+const onTouchstart = e => {
+  curCandy = e.target
+  initX = e.touches[0].clientX
+  initY = e.touches[0].clientY
+
+  // console.log(initX, initY)
+  // console.log(e)
+
+  e.preventDefault()
+}
+const onTouchmove = e => {
+  // console.log(e)
+  const touchLocation = e.targetTouches[0]
+
+  // assign box new coordinates based on the touch.
+  moveRight = touchLocation.clientX - initX
+  moveDown = touchLocation.clientY - initY
+
+  const moveHoriz = Math.abs(moveRight) >= Math.abs(moveDown)
+  curCandy.style.position = 'relative'
+  const halfCandyWidth = curCandy.clientWidth / 2
+  const halfCandyHeight = curCandy.clientHeight / 2
+
+  if (moveHoriz) {
+    curCandy.style.top = 0
+    curCandy.style.left =
+      moveRight >= 0 ? `${halfCandyWidth}px` : `-${halfCandyWidth}px`
+  }
+  if (!moveHoriz) {
+    curCandy.style.left = 0
+    curCandy.style.top =
+      moveDown >= 0 ? `${halfCandyHeight}px` : `-${halfCandyHeight}px`
+  }
+  e.preventDefault()
+}
+
+const onTouchend = e => {
+  const isMoveHoriz = Math.abs(moveRight) >= Math.abs(moveDown)
+  const curCandyRowColumn = curCandy.id.split('-')
+
+  if (isMoveHoriz) {
+    otherCandy =
+      board[curCandyRowColumn[0]][
+        moveRight >= 0 ? +curCandyRowColumn[1] + 1 : +curCandyRowColumn[1] - 1
+      ]
+  }
+  if (!isMoveHoriz) {
+    otherCandy =
+      board[
+        moveDown >= 0 ? +curCandyRowColumn[0] + 1 : +curCandyRowColumn[0] - 1
+      ][curCandyRowColumn[1]]
+  }
+
+  onDragend()
+
+  curCandy.style.position = 'static'
+
+  e.preventDefault()
+}
+const onTouchcancel = e => {
+  console.log(e)
+  e.preventDefault()
+}
+
 const startGame = () => {
   for (let r = 0; r < rows; r++) {
     let row = []
@@ -436,6 +508,11 @@ const startGame = () => {
       tile.addEventListener('dragleave', onDragleave)
       tile.addEventListener('drop', onDrop)
       tile.addEventListener('dragend', onDragend)
+
+      tile.addEventListener('touchstart', onTouchstart)
+      tile.addEventListener('touchmove', onTouchmove)
+      tile.addEventListener('touchend', onTouchend)
+      tile.addEventListener('touchcancel', onTouchcancel)
     }
     board.push(row)
   }
