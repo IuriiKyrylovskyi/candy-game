@@ -311,10 +311,14 @@ const cruchThree = () => {
 }
 
 const crushCandy = () => {
-  cruchFive()
-  cruchFour()
-  cruchThree()
-  document.querySelector('#score').textContent = score
+  const timeout = setTimeout(() => {
+    cruchFive()
+    cruchFour()
+    cruchThree()
+    document.querySelector('#score').textContent = score
+  }, 20)
+
+  return () => clearTimeout(timeout)
 }
 
 const slideCandy = () => {
