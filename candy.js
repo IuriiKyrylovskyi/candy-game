@@ -9,12 +9,14 @@ let curCandy
 let otherCandy
 let score = 0
 
+// for mobile
 let initX
 let initY
-let endX
-let endY
-let moveRight
-let moveDown
+let moveX
+let moveY
+let moveOffsetX
+let moveOffsetY
+let touchedElement
 
 const setRandom = arr => {
   return arr[Math.floor(Math.random() * arr.length)]
@@ -417,74 +419,80 @@ const onDragend = () => {
     }
   }
 
-  const timeout = setTimeout(swapImgs, 200)
-
-  return () => clearTimeout(timeout)
+  swapImgs()
 }
 
 // touch events
 const onTouchstart = e => {
+  e.preventDefault()
   curCandy = e.target
-  initX = e.touches[0].clientX
-  initY = e.touches[0].clientY
+  const touch = e.touches[0]
 
-  // console.log(initX, initY)
-  // console.log(e)
+  moveOffsetX = curCandy.offsetLeft - touch.pageX
+  moveOffsetY = curCandy.offsetTop - touch.pageY
 
-  e.preventDefault()
+  const posX = e.changedTouches[0].pageX + moveOffsetX
+  const posY = e.changedTouches[0].pageY + moveOffsetY
+
+  initX = posX
+  initY = posY
+
+  touchedElement = document.createElement('img')
+  touchedElement.classList.add('touch')
+  touchedElement.src = curCandy.src
+  touchedElement.style.left = posX + 'px'
+  touchedElement.style.top = posY + 'px'
+
+  document.querySelector('main').appendChild(touchedElement)
+
+  curCandy.style.opacity = 0
 }
+
 const onTouchmove = e => {
-  // console.log(e)
-  const touchLocation = e.targetTouches[0]
-
-  // assign box new coordinates based on the touch.
-  moveRight = touchLocation.clientX - initX
-  moveDown = touchLocation.clientY - initY
-
-  const moveHoriz = Math.abs(moveRight) >= Math.abs(moveDown)
-  curCandy.style.position = 'relative'
-  const halfCandyWidth = curCandy.clientWidth / 2
-  const halfCandyHeight = curCandy.clientHeight / 2
-
-  if (moveHoriz) {
-    curCandy.style.top = 0
-    curCandy.style.left =
-      moveRight >= 0 ? `${halfCandyWidth}px` : `-${halfCandyWidth}px`
-  }
-  if (!moveHoriz) {
-    curCandy.style.left = 0
-    curCandy.style.top =
-      moveDown >= 0 ? `${halfCandyHeight}px` : `-${halfCandyHeight}px`
-  }
   e.preventDefault()
+
+  const posX = e.touches[0].pageX + moveOffsetX
+  const posY = e.touches[0].pageY + moveOffsetY
+
+  moveX = posX
+  moveY = posY
+
+  touchedElement.style.left = posX + 'px'
+  touchedElement.style.top = posY + 'px'
 }
 
 const onTouchend = e => {
-  const isMoveHoriz = Math.abs(moveRight) >= Math.abs(moveDown)
-  const curCandyRowColumn = curCandy.id.split('-')
+  e.preventDefault()
 
-  if (isMoveHoriz) {
+  const curCandyRowColumn = curCandy.id.split('-')
+  const tochElement = document.querySelector('.touch')
+  document.querySelector('main').removeChild(tochElement)
+
+  const rightMove = moveX - initX
+  const downMove = moveY - initY
+
+  const isHorizontalMove = Math.abs(rightMove) - Math.abs(downMove) >= 0
+
+  if (isHorizontalMove) {
     otherCandy =
       board[curCandyRowColumn[0]][
-        moveRight >= 0 ? +curCandyRowColumn[1] + 1 : +curCandyRowColumn[1] - 1
+        rightMove >= 0 ? +curCandyRowColumn[1] + 1 : +curCandyRowColumn[1] - 1
       ]
   }
-  if (!isMoveHoriz) {
+  if (!isHorizontalMove) {
     otherCandy =
       board[
-        moveDown >= 0 ? +curCandyRowColumn[0] + 1 : +curCandyRowColumn[0] - 1
+        downMove >= 0 ? +curCandyRowColumn[0] + 1 : +curCandyRowColumn[0] - 1
       ][curCandyRowColumn[1]]
   }
 
   onDragend()
 
-  curCandy.style.position = 'static'
-
-  e.preventDefault()
+  curCandy.style.opacity = '1'
 }
+
 const onTouchcancel = e => {
-  console.log(e)
-  e.preventDefault()
+  onTouchend()
 }
 
 const startGame = () => {
@@ -509,10 +517,10 @@ const startGame = () => {
       tile.addEventListener('drop', onDrop)
       tile.addEventListener('dragend', onDragend)
 
-      tile.addEventListener('touchstart', onTouchstart)
-      tile.addEventListener('touchmove', onTouchmove)
-      tile.addEventListener('touchend', onTouchend)
-      tile.addEventListener('touchcancel', onTouchcancel)
+      tile.addEventListener('touchstart', onTouchstart, false)
+      tile.addEventListener('touchmove', onTouchmove, false)
+      tile.addEventListener('touchend', onTouchend, false)
+      tile.addEventListener('touchcancel', onTouchcancel, false)
     }
     board.push(row)
   }
